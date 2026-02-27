@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 16,
     marginHorizontal: 4,
+    marginBottom: 6,
     borderRadius: 18,
     padding: 18,
     overflow: 'hidden',

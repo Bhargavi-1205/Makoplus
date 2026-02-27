@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../theme/colors';
 import { Appointment } from '../../types';
 
 interface VisitHistoryListProps {
   visits: Appointment[];
+  onPressDetails: (visitId: string) => void;
 }
 
 const DOT_COLORS = [colors.terra, colors.mint, colors.blush];
 
-export default function VisitHistoryList({ visits }: VisitHistoryListProps) {
+export default function VisitHistoryList({ visits, onPressDetails }: VisitHistoryListProps) {
   return (
     <View>
       {visits.map((visit, index) => (
@@ -22,7 +23,9 @@ export default function VisitHistoryList({ visits }: VisitHistoryListProps) {
           </View>
           <View style={styles.dateCol}>
             <Text style={styles.date}>{visit.date}</Text>
-            <Text style={styles.details}>→ Details</Text>
+            <Pressable onPress={() => onPressDetails(visit.id)}>
+              <Text style={styles.details}>→ Details</Text>
+            </Pressable>
           </View>
         </View>
       ))}

@@ -6,6 +6,11 @@ import ProfileScreen from '../screens/ProfileScreen';
 import BookingScreen from '../screens/BookingScreen';
 import IntakeScreen from '../screens/IntakeScreen';
 import ConfirmScreen from '../screens/ConfirmScreen';
+import AddProfileScreen from '../screens/AddProfileScreen';
+import RecentVisitsScreen from '../screens/RecentVisitsScreen';
+import VisitDetailsScreen from '../screens/VisitDetailsScreen';
+import SkinTrackerScreen from '../screens/SkinTrackerScreen';
+import RemindersScreen from '../screens/RemindersScreen';
 import { MainTabParamList, RootStackParamList } from './types';
 import TabBar from './TabBar';
 
@@ -38,8 +43,11 @@ export default function MainNavigator() {
       <RootStack.Screen name="Booking" component={BookingScreen} />
       <RootStack.Screen name="Intake" component={IntakeScreen} />
       <RootStack.Screen name="Confirm" component={ConfirmScreen} />
+      <RootStack.Screen name="AddProfile" component={AddProfileScreen} />
+      <RootStack.Screen name="RecentVisits" component={RecentVisitsScreen} />
+      <RootStack.Screen name="VisitDetails" component={VisitDetailsScreen} />
+      <RootStack.Screen name="SkinTracker" component={SkinTrackerScreen} />
+      <RootStack.Screen name="Reminders" component={RemindersScreen} />
     </RootStack.Navigator>
   );
 }
-
-

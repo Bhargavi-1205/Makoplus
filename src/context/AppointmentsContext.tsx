@@ -15,28 +15,59 @@ const AppointmentsContext = createContext<AppointmentsContextType | undefined>(u
 export function AppointmentsProvider({ children }: PropsWithChildren) {
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const raw = await AsyncStorage.getItem(APPOINTMENTS_KEY);
+  //     if (!raw) {
+  //       return;
+  //     }
+  //     try {
+  //       const parsed = JSON.parse(raw) as Appointment[];
+  //       setAppointments(parsed);
+  //     } catch {
+  //       setAppointments(mockAppointments);
+  //     }
+  //   })();
+  // }, []);
   useEffect(() => {
-    (async () => {
-      const raw = await AsyncStorage.getItem(APPOINTMENTS_KEY);
-      if (!raw) {
-        return;
-      }
+    const loadAppointments = async () => {
       try {
+        const raw = await AsyncStorage.getItem(APPOINTMENTS_KEY);
+
+        if (!raw) {
+          await AsyncStorage.setItem(
+            APPOINTMENTS_KEY,
+            JSON.stringify(mockAppointments)
+          );
+          setAppointments(mockAppointments);
+          return;
+        }
+
         const parsed = JSON.parse(raw) as Appointment[];
         setAppointments(parsed);
-      } catch {
+      } catch (error) {
         setAppointments(mockAppointments);
       }
-    })();
+    };
+
+    loadAppointments();
   }, []);
 
   const addAppointment = async (appointment: Appointment) => {
-    setAppointments((prev) => {
-      const next = [appointment, ...prev.filter((item) => item.id !== appointment.id)];
-      AsyncStorage.setItem(APPOINTMENTS_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
+  setAppointments((prev) => {
+    const next = [
+      appointment,
+      ...prev.filter((item) => item.id !== appointment.id),
+    ];
+
+    AsyncStorage.setItem(
+      APPOINTMENTS_KEY,
+      JSON.stringify(next)
+    );
+
+    return next;
+  });
+};
 
   const value = useMemo(() => ({ appointments, addAppointment }), [appointments]);
 

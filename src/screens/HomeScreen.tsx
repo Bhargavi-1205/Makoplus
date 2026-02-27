@@ -1,4 +1,5 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -9,8 +10,7 @@ import QuickActionGrid from '../components/home/QuickActionGrid';
 import VisitHistoryList from '../components/home/VisitHistoryList';
 import { useAppointments } from '../context/AppointmentsContext';
 import { useProfile } from '../context/ProfileContext';
-import { useToast } from '../context/ToastContext';
-import { MainTabParamList } from '../navigation/types';
+import { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 
 type Props = BottomTabScreenProps<MainTabParamList, 'Home'>;
@@ -28,7 +28,7 @@ export default function HomeScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { activeProfile, profiles, setActiveProfile } = useProfile();
   const { appointments } = useAppointments();
-  const { showToast } = useToast();
+  const rootNavigation = navigation.getParent<NavigationProp<RootStackParamList>>();
 
   const activeAppointments = appointments.filter((a) => a.profileId === activeProfile.id);
   const upcoming = activeAppointments.find((a) => a.status === 'upcoming');
@@ -37,7 +37,6 @@ export default function HomeScreen({ navigation }: Props) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
       <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <View style={styles.curve} />
         <View style={styles.greetingRow}>
           <View>
             <Text style={styles.greeting}>Good morning,</Text>
@@ -49,7 +48,7 @@ export default function HomeScreen({ navigation }: Props) {
             </LinearGradient>
           </Pressable>
         </View>
-        <NextAppointmentCard appointment={upcoming} onBook={() => navigation.getParent()?.navigate('Booking' as never)} />
+        <NextAppointmentCard appointment={upcoming} onBook={() => rootNavigation?.navigate('Booking')} />
       </View>
 
       <View style={styles.body}>
@@ -61,7 +60,7 @@ export default function HomeScreen({ navigation }: Props) {
           profiles={profiles}
           activeProfileId={activeProfile.id}
           onSelect={setActiveProfile}
-          onAddPress={() => showToast('Add profile coming soon')}
+          onAddPress={() => rootNavigation?.navigate('AddProfile')}
         />
 
         <View style={styles.sectionHead}>
@@ -74,7 +73,8 @@ export default function HomeScreen({ navigation }: Props) {
               icon: <Ionicons name="calendar-clear-outline" size={28} color={colors.deep} />,
               title: 'Book Appointment',
               subtitle: 'Fresh or follow-up',
-              onPress: () => navigation.getParent()?.navigate('Booking' as never),
+               variant: 'mint',
+              onPress: () => rootNavigation?.navigate('Booking'),
             },
             {
               id: 'rx',
@@ -89,23 +89,30 @@ export default function HomeScreen({ navigation }: Props) {
               icon: <Ionicons name="camera-outline" size={28} color={colors.deep} />,
               title: 'Skin Tracker',
               subtitle: 'Progress photos',
-              onPress: () => showToast('Skin Tracker coming soon'),
+               variant: 'mint',
+              onPress: () => rootNavigation?.navigate('SkinTracker'),
             },
             {
               id: 'reminder',
               icon: <Ionicons name="notifications-outline" size={28} color={colors.deep} />,
               title: 'Reminders',
               subtitle: 'Medication alerts',
-              onPress: () => showToast('Reminders coming soon'),
+               variant: 'mint',
+              onPress: () => rootNavigation?.navigate('Reminders'),
             },
           ]}
         />
 
         <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>Recent Visits</Text>
-          <Text style={styles.sectionAction}>View All</Text>
+          <Pressable onPress={() => rootNavigation?.navigate('RecentVisits')}>
+            <Text style={styles.sectionAction}>View All</Text>
+          </Pressable>
         </View>
-        <VisitHistoryList visits={recentVisits} />
+        <VisitHistoryList
+          visits={recentVisits}
+          onPressDetails={(visitId) => rootNavigation?.navigate('VisitDetails', { visitId })}
+        />
       </View>
     </ScrollView>
   );
@@ -119,18 +126,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: colors.deep,
     paddingHorizontal: 24,
-    paddingBottom: 32,
-    position: 'relative',
-  },
-  curve: {
-    position: 'absolute',
-    bottom: -1,
-    left: 0,
-    right: 0,
-    height: 36,
-    backgroundColor: colors.card,
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
+    paddingBottom: 48,
   },
   greetingRow: {
     flexDirection: 'row',
@@ -161,6 +157,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
   body: {
+    marginTop: -20,
+    backgroundColor: colors.card,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingTop: 10,
     paddingHorizontal: 20,
   },
   sectionHead: {
@@ -181,4 +182,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
 });
-

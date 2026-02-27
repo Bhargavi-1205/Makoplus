@@ -27,5 +27,11 @@ export type RootStackParamList = {
     intakeData: IntakeFormData;
     appointmentDetails: Partial<Appointment>;
   };
+  AddProfile: undefined;
+  RecentVisits: undefined;
+  VisitDetails: {
+    visitId: string;
+  };
+  SkinTracker: undefined;
+  Reminders: undefined;
 };
-
